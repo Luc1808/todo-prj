@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"io"
+	"log"
 	"net/http"
 
 	"github.com/Luc1808/todo-prj/internal/db"
@@ -11,11 +13,25 @@ func main() {
 
 	db.InitDB()
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		io.WriteString(w, "This is my website!")
+	http.HandleFunc("POST /", func(w http.ResponseWriter, r *http.Request) {
+
+		type RequestBody struct {
+			Username string `json:"username"`
+		}
+
+		var user RequestBody
+		err := json.NewDecoder(r.Body).Decode(&user)
+		if err != nil {
+			http.Error(w, "Invalid JSON", http.StatusBadRequest)
+			return
+		}
+
+		io.WriteString(w, user.Username)
 	})
 
-	err := http.ListenAndServe(":8080", nil)
+	port := ":8080"
+	log.Printf("Server is running on port %s", port)
+	err := http.ListenAndServe(port, nil)
 	if err != nil {
 		panic(err)
 	}
