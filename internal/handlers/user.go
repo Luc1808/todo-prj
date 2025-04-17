@@ -1,5 +1,27 @@
 package handlers
 
-func RegisterHandler() {
+import (
+	"encoding/json"
+	"net/http"
 
+	"github.com/Luc1808/todo-prj/internal/models"
+)
+
+func RegisterHandler(w http.ResponseWriter, r *http.Request) {
+	var user models.User
+	err := json.NewDecoder(r.Body).Decode(&user)
+	if err != nil {
+		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		return
+	}
+
+	err = user.Save()
+	if err != nil {
+		http.Error(w, "Problems registering user", http.StatusBadRequest)
+		return
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode("User succesfully created!")
 }

@@ -3,12 +3,12 @@ package models
 import "time"
 
 type Todo struct {
-	Title       string
-	Description string
-	Complete    bool
-	Priority    string
-	Category    string
-	CreatedAt   time.Time
-	DueAt       time.Time
-	UserID      uint
+	Title       string    `json:"title"`
+	Description string    `json:"descrition"`
+	Complete    bool      `json:"complete"`
+	Priority    string    `json:"priority"`
+	Category    string    `json:"category"`
+	CreatedAt   time.Time `json:"createdAt"`
+	DueAt       time.Time `json:"dueAt"`
+	UserID      uint      `json:"userID"`
 }

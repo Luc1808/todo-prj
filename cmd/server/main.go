@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/Luc1808/todo-prj/internal/db"
+	"github.com/Luc1808/todo-prj/internal/handlers"
 )
 
 func main() {
@@ -28,6 +29,7 @@ func main() {
 
 		io.WriteString(w, user.Username)
 	})
+	http.HandleFunc("POST /register", handlers.RegisterHandler)
 
 	port := ":8080"
 	log.Printf("Server is running on port %s", port)
