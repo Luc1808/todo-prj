@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -17,4 +18,19 @@ func GenerateToken(id uint, email string) (string, error) {
 	})
 
 	return token.SignedString([]byte(secretKey))
+}
+
+func VerifyToken(tokenString string) error {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
+		return []byte(secretKey), nil
+	})
+	if err != nil {
+		return err
+	}
+
+	if !token.Valid {
+		fmt.Errorf("invalid token")
+	}
+
+	return nil
 }

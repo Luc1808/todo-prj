@@ -1,41 +1,33 @@
 package main
 
 import (
-	"encoding/json"
 	"io"
 	"log"
 	"net/http"
 
 	"github.com/Luc1808/todo-prj/internal/db"
 	"github.com/Luc1808/todo-prj/internal/handlers"
+	"github.com/Luc1808/todo-prj/internal/middlewares"
 )
 
 func main() {
-
 	db.InitDB()
 
-	http.HandleFunc("POST /", func(w http.ResponseWriter, r *http.Request) {
+	mux := http.NewServeMux()
 
-		type RequestBody struct {
-			Username string `json:"username"`
-		}
+	// Public routes
+	mux.HandleFunc("POST /register", handlers.RegisterHandler)
+	mux.HandleFunc("POST /login", handlers.LoginHandler)
+	mux.HandleFunc("GET /users", handlers.GetUsers)
 
-		var user RequestBody
-		err := json.NewDecoder(r.Body).Decode(&user)
-		if err != nil {
-			http.Error(w, "Invalid JSON", http.StatusBadRequest)
-			return
-		}
-
-		io.WriteString(w, user.Username)
-	})
-	http.HandleFunc("POST /register", handlers.RegisterHandler)
-	http.HandleFunc("POST /login", handlers.LoginHandler)
-	http.HandleFunc("GET /users", handlers.GetUsers)
+	// Protected routes
+	mux.Handle("GET /protected", middlewares.Authentication(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		io.WriteString(w, "Welcome to the protected page!")
+	})))
 
 	port := ":8080"
 	log.Printf("Server is running on port %s", port)
-	err := http.ListenAndServe(port, nil)
+	err := http.ListenAndServe(port, mux)
 	if err != nil {
 		panic(err)
 	}
