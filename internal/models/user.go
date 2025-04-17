@@ -6,6 +6,7 @@ import (
 )
 
 type User struct {
+	ID       uint
 	Email    string `json:"email"`
 	Password string `json:"password"`
 }
@@ -25,4 +26,28 @@ func (u *User) Save() error {
 	}
 
 	return nil
+}
+
+func GetAllUsers() ([]User, error) {
+	query := `SELECT * FROM users`
+	rows, err := db.DB.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []User
+
+	for rows.Next() {
+		var user User
+		err = rows.Scan(&user.ID, &user.Email, &user.Password)
+
+		if err != nil {
+			return nil, err
+		}
+
+		users = append(users, user)
+	}
+
+	return users, nil
 }

@@ -30,6 +30,7 @@ func main() {
 		io.WriteString(w, user.Username)
 	})
 	http.HandleFunc("POST /register", handlers.RegisterHandler)
+	http.HandleFunc("GET /users", handlers.GetUsers)
 
 	port := ":8080"
 	log.Printf("Server is running on port %s", port)

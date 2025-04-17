@@ -25,3 +25,19 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode("User succesfully created!")
 }
+
+func LoginHandler(w http.ResponseWriter, r *http.Request) {
+
+}
+
+func GetUsers(w http.ResponseWriter, r *http.Request) {
+	users, err := models.GetAllUsers()
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(users)
+}

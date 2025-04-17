@@ -3,6 +3,7 @@ package models
 import "time"
 
 type Todo struct {
+	ID          string
 	Title       string    `json:"title"`
 	Description string    `json:"descrition"`
 	Complete    bool      `json:"complete"`
