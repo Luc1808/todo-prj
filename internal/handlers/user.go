@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/Luc1808/todo-prj/internal/models"
+	"github.com/Luc1808/todo-prj/internal/utils"
 )
 
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
@@ -40,10 +41,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	token, err := utils.GenerateToken(user.ID, user.Email)
+	if err != nil {
+		http.Error(w, "Unable to create athentication token", http.StatusInternalServerError)
+		return
+	}
+
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode("Login successful")
-
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "Login successful",
+		"token":   token,
+	})
 }
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
