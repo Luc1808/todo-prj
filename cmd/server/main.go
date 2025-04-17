@@ -30,6 +30,7 @@ func main() {
 		io.WriteString(w, user.Username)
 	})
 	http.HandleFunc("POST /register", handlers.RegisterHandler)
+	http.HandleFunc("POST /login", handlers.LoginHandler)
 	http.HandleFunc("GET /users", handlers.GetUsers)
 
 	port := ":8080"
