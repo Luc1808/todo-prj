@@ -62,4 +62,15 @@ func createTables() {
 		panic("Could not create todo table.")
 	}
 
+	_, err = DB.Exec(`CREATE TABLE IF NOT EXISTS token (
+		id SERIAL PRIMARY KEY,
+		token TEXT,
+		userID INTEGER,
+		createdAt timestamp,
+		expiresAt timestamp,
+		FOREIGN KEY (userID) REFERENCES users(id)
+	);`)
+	if err != nil {
+		panic("Could not create token table.")
+	}
 }

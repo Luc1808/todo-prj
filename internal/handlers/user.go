@@ -3,6 +3,7 @@ package handlers
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/Luc1808/todo-prj/internal/models"
 	"github.com/Luc1808/todo-prj/internal/utils"
@@ -41,17 +42,24 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := utils.GenerateToken(user.ID, user.Email)
+	tokenPair, err := utils.GenerateTokenPair(user.ID, user.Email)
 	if err != nil {
 		http.Error(w, "Unable to create athentication token", http.StatusInternalServerError)
+		return
+	}
+
+	err = models.StoreRefreshToken(user.ID, tokenPair.RefreshToken, time.Now().Add(time.Hour*24*7))
+	if err != nil {
+		http.Error(w, "Unable to store athentication token in DB", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-type", "application/json")
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "Login successful",
-		"token":   token,
+		"message":       "Login successful",
+		"access_token":  tokenPair.AccessToken,
+		"refresh_token": tokenPair.RefreshToken,
 	})
 }
 
