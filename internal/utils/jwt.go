@@ -16,6 +16,11 @@ type TokenPair struct {
 var secretAcessKey = os.Getenv("JWT_ACCESS_SECRET")
 var secretRefreshKey = os.Getenv("JWT_REFRESH_SECRET")
 
+const (
+	AccessTokenDuration  = time.Minute * 15
+	RefreshTokenDuration = time.Hour * 24 * 7
+)
+
 // func GenerateToken(id uint, email string) (string, error) {
 // 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 // 		"user_id": id,
@@ -30,13 +35,13 @@ func GenerateTokenPair(id uint, email string) (TokenPair, error) {
 	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": id,
 		"email":   email,
-		"exp":     time.Now().Add(time.Minute * 15).Unix(),
+		"exp":     time.Now().Add(AccessTokenDuration).Unix(),
 	})
 
 	refreshToken := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": id,
 		"email":   email,
-		"exp":     time.Now().Add(time.Hour * 24 * 7).Unix(),
+		"exp":     time.Now().Add(RefreshTokenDuration).Unix(),
 	})
 
 	accessTokenString, err := accessToken.SignedString([]byte(secretAcessKey))

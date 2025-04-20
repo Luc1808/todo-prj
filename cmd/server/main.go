@@ -18,6 +18,7 @@ func main() {
 	// Public routes
 	mux.HandleFunc("POST /register", handlers.RegisterHandler)
 	mux.HandleFunc("POST /login", handlers.LoginHandler)
+	mux.HandleFunc("POST /refresh", handlers.RefreshHandler)
 	mux.HandleFunc("GET /users", handlers.GetUsers)
 
 	// Protected routes
