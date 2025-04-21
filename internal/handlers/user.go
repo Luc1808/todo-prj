@@ -67,7 +67,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 
 func RefreshHandler(w http.ResponseWriter, r *http.Request) {
 	var tokenRequest struct {
-		RefreshToken string `json:"token"`
+		RefreshToken string `json:"refresh_token"`
 	}
 
 	err := json.NewDecoder(r.Body).Decode(&tokenRequest)
@@ -115,6 +115,14 @@ func RefreshHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Failed to delete old refresh token", http.StatusInternalServerError)
 		return
 	}
+
+	w.Header().Set("Content-type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	json.NewEncoder(w).Encode(map[string]string{
+		"message":       "Refresh successful. New token pair added!",
+		"access_token":  newTokenPair.AccessToken,
+		"refresh_token": newTokenPair.RefreshToken,
+	})
 }
 
 func GetUsers(w http.ResponseWriter, r *http.Request) {
