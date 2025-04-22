@@ -20,6 +20,7 @@ func main() {
 	mux.HandleFunc("POST /login", handlers.LoginHandler)
 	mux.HandleFunc("POST /refresh", handlers.RefreshHandler)
 	mux.HandleFunc("GET /users", handlers.GetUsers)
+	mux.HandleFunc("POST /tasks", handlers.CreateTodoHandler)
 
 	// Protected routes
 	mux.Handle("GET /protected", middlewares.Authentication(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
