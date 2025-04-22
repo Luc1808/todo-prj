@@ -61,7 +61,7 @@ func (t *Todo) Save() error {
 }
 
 func (t *Todo) GetAllTodos() ([]Todo, error) {
-	query := `SELECT id, title, description, complete, priority, category, createdat, duedate FROM todo WHERE userid = $1`
+	query := `SELECT id, title, description, complete, priority, category, createdat, duedate, userID FROM todo WHERE userid = $1`
 	rows, err := db.DB.Query(query, t.UserID)
 	if err != nil {
 		return nil, err
@@ -72,7 +72,7 @@ func (t *Todo) GetAllTodos() ([]Todo, error) {
 
 	for rows.Next() {
 		var todo Todo
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueAt)
+		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueAt, &todo.UserID)
 		if err != nil {
 			return nil, err
 		}
