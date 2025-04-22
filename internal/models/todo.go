@@ -94,3 +94,13 @@ func (t *Todo) GetTodoByID(id uint) error {
 
 	return nil
 }
+
+func (t *Todo) UpdateTodo(id uint, userID uint) error {
+	query := `UPDATE todo SET title = $1, description = $2, complete = $3, priority = $4, category = $5, duedate = $6 WHERE id = $7 AND userID = $8`
+	_, err := db.DB.Exec(query, t.Title, t.Description, t.Complete, t.Priority, t.Category, t.DueAt, id, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
