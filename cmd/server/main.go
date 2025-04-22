@@ -23,6 +23,7 @@ func main() {
 	mux.HandleFunc("POST /tasks", handlers.CreateTodoHandler)
 
 	// Protected routes
+	mux.Handle("GET /tasks", middlewares.Authentication(http.HandlerFunc(handlers.GetAllTodos)))
 	mux.Handle("GET /protected", middlewares.Authentication(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "Welcome to the protected page!")
 	})))
