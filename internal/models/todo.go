@@ -82,3 +82,15 @@ func (t *Todo) GetAllTodos() ([]Todo, error) {
 
 	return todos, nil
 }
+
+func (t *Todo) GetTodoByID(id uint) error {
+	query := `SELECT title, description, complete, priority, category, createdat, duedate, userID FROM todo WHERE id = $1`
+	row := db.DB.QueryRow(query, id)
+
+	err := row.Scan(&t.Title, &t.Description, &t.Complete, &t.Priority, &t.Category, &t.CreatedAt, &t.DueAt, &t.UserID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
