@@ -104,3 +104,13 @@ func (t *Todo) UpdateTodo(id uint, userID uint) error {
 
 	return nil
 }
+
+func (t *Todo) DeleteTodo(id uint, userID uint) error {
+	query := `DELETE FROM todo WHERE id = $1 AND userID = $2`
+	_, err := db.DB.Exec(query, id, userID)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
