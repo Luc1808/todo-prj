@@ -20,15 +20,16 @@ func main() {
 	mux.HandleFunc("POST /login", handlers.LoginHandler)
 	mux.HandleFunc("POST /refresh", handlers.RefreshHandler)
 	mux.HandleFunc("GET /users", handlers.GetUsers)
-	mux.HandleFunc("POST /tasks", handlers.CreateTodoHandler)
 
 	// Protected routes
+	mux.Handle("POST /tasks", middlewares.Authentication(http.HandlerFunc(handlers.CreateTodoHandler)))
 	mux.Handle("PUT /tasks/{id}", middlewares.Authentication(http.HandlerFunc(handlers.UpdateTodo)))
 	mux.Handle("DELETE /tasks/{id}", middlewares.Authentication(http.HandlerFunc(handlers.DeleteTodo)))
 	mux.Handle("GET /tasks", middlewares.Authentication(http.HandlerFunc(handlers.GetAllTodos)))
 	mux.Handle("GET /tasks/{id}", middlewares.Authentication(http.HandlerFunc(handlers.GetTodoByID)))
 	mux.Handle("GET /tasks/completed", middlewares.Authentication(http.HandlerFunc(handlers.GetCompletedTodos)))
 	mux.Handle("GET /tasks/priority/{level}", middlewares.Authentication(http.HandlerFunc(handlers.GetTodosByPriority)))
+	mux.Handle("GET /tasks/category/{category}", middlewares.Authentication(http.HandlerFunc(handlers.GetTodosByCategory)))
 	mux.Handle("GET /protected", middlewares.Authentication(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "Welcome to the protected page!")
 	})))

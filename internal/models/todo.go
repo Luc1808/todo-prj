@@ -141,6 +141,29 @@ func GetTodosByPriority(userID uint, priority Priorities) ([]Todo, error) {
 	return todos, nil
 }
 
+func GetTodosByCategory(userID uint, category Categories) ([]Todo, error) {
+	query := `SELECT id, title, description, complete, priority, category, createdat, duedate FROM todo WHERE userid = $1 AND category = $2`
+	rows, err := db.DB.Query(query, userID, category)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var todos []Todo
+
+	for rows.Next() {
+		var todo Todo
+		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueAt)
+		if err != nil {
+			return nil, err
+		}
+
+		todos = append(todos, todo)
+	}
+
+	return todos, nil
+}
+
 func (t *Todo) UpdateTodo(id uint, userID uint) error {
 	query := `UPDATE todo SET title = $1, description = $2, complete = $3, priority = $4, category = $5, duedate = $6 WHERE id = $7 AND userID = $8`
 	_, err := db.DB.Exec(query, t.Title, t.Description, t.Complete, t.Priority, t.Category, t.DueAt, id, userID)
