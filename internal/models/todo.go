@@ -2,6 +2,7 @@ package models
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/Luc1808/todo-prj/internal/db"
@@ -11,16 +12,16 @@ type Priorities string
 type Categories string
 
 const (
-	High   Priorities = "High"
-	Medium Priorities = "Medium"
-	Low    Priorities = "Low"
+	High   Priorities = "high"
+	Medium Priorities = "medium"
+	Low    Priorities = "low"
 )
 
 const (
-	Health  Categories = "Health"
-	SelfDev Categories = "Self Development"
-	Finance Categories = "Finance"
-	Social  Categories = "Social"
+	Health  Categories = "health"
+	SelfDev Categories = "self development"
+	Finance Categories = "finance"
+	Social  Categories = "social"
 )
 
 type Todo struct {
@@ -84,7 +85,47 @@ func (t *Todo) Save() error {
 // 	return todos, nil
 // }
 
-func GetTodosWithPagination(userID uint, limit int, offset int, sortBy string, sortOrder string) ([]Todo, error) {
+func GetTodosWithPagination(
+	userID uint,
+	limit int,
+	offset int,
+	sortBy string,
+	sortOrder string,
+	filterPriority Priorities,
+	filterCategory Categories,
+	filterComplete *bool,
+) ([]Todo, error) {
+	var conditions []string
+	var args []any
+	argIndex := 1
+
+	conditions = append(conditions, fmt.Sprintf("userid = $%d", argIndex))
+	args = append(args, userID)
+	argIndex++
+
+	if filterPriority != "" {
+		conditions = append(conditions, fmt.Sprintf("priority = $%d", argIndex))
+		args = append(args, filterPriority)
+		argIndex++
+	}
+
+	if filterCategory != "" {
+		conditions = append(conditions, fmt.Sprintf("category = $%d", argIndex))
+		args = append(args, filterCategory)
+		argIndex++
+	}
+
+	if filterComplete != nil {
+		conditions = append(conditions, fmt.Sprintf("complete = $%d", argIndex))
+		args = append(args, *filterComplete)
+		argIndex++
+	}
+
+	whereClause := ""
+	if len(conditions) > 0 {
+		whereClause = "WHERE " + strings.Join(conditions, " AND ")
+	}
+
 	var orderBy string
 	if sortBy == "priority" {
 		orderBy = fmt.Sprintf(
@@ -101,11 +142,14 @@ func GetTodosWithPagination(userID uint, limit int, offset int, sortBy string, s
 	query := fmt.Sprintf(
 		`SELECT id, title, description, complete, priority, category, createdat, duedate 
 		FROM todo 
-		WHERE userid = $1 
+		%s
 		ORDER BY %s 
-		LIMIT $2 OFFSET $3
-		`, orderBy)
-	rows, err := db.DB.Query(query, userID, limit, offset)
+		LIMIT $%d OFFSET $%d 
+		`, whereClause, orderBy, argIndex, argIndex+1)
+
+	args = append(args, limit, offset)
+
+	rows, err := db.DB.Query(query, args...)
 	if err != nil {
 		return nil, err
 	}

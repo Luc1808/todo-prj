@@ -131,7 +131,7 @@ func GetAllTodosWithPagination(w http.ResponseWriter, r *http.Request) {
 
 	userID := uint(claims["user_id"].(float64))
 
-	// Pagination, sorting stuff
+	// Pagination, sorting, filtering stuff
 	totalTodos, err := models.GetNumberOfTodos(userID)
 	if err != nil {
 		http.Error(w, "Failed to get the total number of to-dos", http.StatusUnauthorized)
@@ -140,8 +140,9 @@ func GetAllTodosWithPagination(w http.ResponseWriter, r *http.Request) {
 
 	page, limit, offset := parsePaginationParams(r)
 	sortBy, sortOrder := parseSortParams(r)
+	priority, category, complete := parseFilterParams(r)
 
-	todos, err := models.GetTodosWithPagination(userID, limit, offset, sortBy, sortOrder)
+	todos, err := models.GetTodosWithPagination(userID, limit, offset, sortBy, sortOrder, priority, category, complete)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -480,4 +481,16 @@ func parseSortParams(r *http.Request) (sortBy, sortOrder string) {
 	}
 
 	return sortBy, sortOrder
+}
+
+func parseFilterParams(r *http.Request) (priority models.Priorities, category models.Categories, complete *bool) {
+	priority = models.Priorities(r.URL.Query().Get("priority"))
+	category = models.Categories(r.URL.Query().Get("category"))
+
+	if completeStr := r.URL.Query().Get("complete"); completeStr != "" {
+		val := completeStr == "true"
+		complete = &val
+	}
+
+	return
 }

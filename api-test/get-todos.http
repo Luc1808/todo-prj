@@ -1,2 +1,2 @@
-GET http://localhost:8080/tasks?sort_by=priority&order=desc
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1Y2FzQGdtYWlsLmNvbSIsImV4cCI6MTc0NTUwMDA4OCwidXNlcl9pZCI6MX0.tv-9wPytKUrJJCCN6dWg4vTqJJyQYbp6EEoPp2M7Mo4
+GET http://localhost:8080/tasks?limit=5&priority=High&complete=true
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1Y2FzQGdtYWlsLmNvbSIsImV4cCI6MTc0NTUwODk4MSwidXNlcl9pZCI6MX0.z8z1cB4r3uRO5VuCs4sF0Mw1H88kskzm6HdRiUy5M9U
