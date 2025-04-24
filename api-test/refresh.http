@@ -1,0 +1,5 @@
+POST http://localhost:8080/refresh
+
+{
+    "refresh_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1Y2FzQGdtYWlsLmNvbSIsImV4cCI6MTc0NTk0Mjc5MiwidXNlcl9pZCI6MX0.BQ2fNF70s2YnE3vbgkVvElyWBtStL4lIFYO47j-HB-U"
+    }

@@ -1,0 +1,2 @@
+DELETE http://localhost:8080/tasks/5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1Y2FzQGdtYWlsLmNvbSIsImV4cCI6MTc0NTQwMDY4OCwidXNlcl9pZCI6MX0.CNH1TOKu6TFiIdm5XXKdoXcKgy0wxgR-RUPBxWFbWQg

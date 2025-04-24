@@ -1,0 +1,2 @@
+GET http://localhost:8080/tasks/priority/High
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1Y2FzQGdtYWlsLmNvbSIsImV4cCI6MTc0NTQwNTcwNCwidXNlcl9pZCI6MX0.ZR5lMJQ0cHbZJQlxjX4YxtAgJfGVt9erVv9xJCjsPp0
