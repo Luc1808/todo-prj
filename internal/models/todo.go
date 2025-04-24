@@ -94,6 +94,7 @@ func GetTodosWithPagination(
 	filterPriority Priorities,
 	filterCategory Categories,
 	filterComplete *bool,
+	search string,
 ) ([]Todo, error) {
 	var conditions []string
 	var args []any
@@ -118,6 +119,12 @@ func GetTodosWithPagination(
 	if filterComplete != nil {
 		conditions = append(conditions, fmt.Sprintf("complete = $%d", argIndex))
 		args = append(args, *filterComplete)
+		argIndex++
+	}
+
+	if search != "" {
+		conditions = append(conditions, fmt.Sprintf("title ILIKE $%d OR description ILIKE $%d", argIndex, argIndex))
+		args = append(args, "%"+search+"%")
 		argIndex++
 	}
 
@@ -282,7 +289,7 @@ func (t *Todo) DeleteTodo(id uint, userID uint) error {
 // 	return total, nil
 // }
 
-func GetFilteredTodoCount(userID uint, priority Priorities, category Categories, complete *bool) (int, error) {
+func GetFilteredTodoCount(userID uint, priority Priorities, category Categories, complete *bool, search string) (int, error) {
 	var conditions []string
 	var args []any
 	argIndex := 1
@@ -306,6 +313,12 @@ func GetFilteredTodoCount(userID uint, priority Priorities, category Categories,
 	if complete != nil {
 		conditions = append(conditions, fmt.Sprintf("complete = $%d", argIndex))
 		args = append(args, *complete)
+		argIndex++
+	}
+
+	if search != "" {
+		conditions = append(conditions, fmt.Sprintf("title ILIKE $%d OR description ILIKE $%d", argIndex, argIndex))
+		args = append(args, "%"+search+"%")
 		argIndex++
 	}
 

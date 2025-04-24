@@ -146,15 +146,16 @@ func GetAllTodosWithPagination(w http.ResponseWriter, r *http.Request) {
 	page, limit, offset := parsePaginationParams(r)
 	sortBy, sortOrder := parseSortParams(r)
 	priority, category, complete := parseFilterParams(r)
+	search := r.URL.Query().Get("search")
 
 	// totalTodos, err := models.GetTodoCount(userID)
-	totalTodos, err := models.GetFilteredTodoCount(userID, priority, category, complete)
+	totalTodos, err := models.GetFilteredTodoCount(userID, priority, category, complete, search)
 	if err != nil {
 		http.Error(w, "Failed to get the total number of to-dos", http.StatusUnauthorized)
 		return
 	}
 
-	todos, err := models.GetTodosWithPagination(userID, limit, offset, sortBy, sortOrder, priority, category, complete)
+	todos, err := models.GetTodosWithPagination(userID, limit, offset, sortBy, sortOrder, priority, category, complete, search)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
