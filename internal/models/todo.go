@@ -271,10 +271,54 @@ func (t *Todo) DeleteTodo(id uint, userID uint) error {
 	return nil
 }
 
-func GetNumberOfTodos(userID uint) (int, error) {
-	query := `SELECT COUNT(*) FROM todo WHERE userID = $1`
+// func GetTodoCount(userID uint) (int, error) {
+// 	query := `SELECT COUNT(*) FROM todo WHERE userID = $1`
+// 	var total int
+// 	err := db.DB.QueryRow(query, userID).Scan(&total)
+// 	if err != nil {
+// 		return 0, err
+// 	}
+
+// 	return total, nil
+// }
+
+func GetFilteredTodoCount(userID uint, priority Priorities, category Categories, complete *bool) (int, error) {
+	var conditions []string
+	var args []any
+	argIndex := 1
+
+	conditions = append(conditions, fmt.Sprintf("userid = $%d", argIndex))
+	args = append(args, userID)
+	argIndex++
+
+	if priority != "" {
+		conditions = append(conditions, fmt.Sprintf("priority = $%d", argIndex))
+		args = append(args, priority)
+		argIndex++
+	}
+
+	if category != "" {
+		conditions = append(conditions, fmt.Sprintf("category = $%d", argIndex))
+		args = append(args, category)
+		argIndex++
+	}
+
+	if complete != nil {
+		conditions = append(conditions, fmt.Sprintf("complete = $%d", argIndex))
+		args = append(args, *complete)
+		argIndex++
+	}
+
+	whereClause := ""
+	if len(conditions) > 0 {
+		whereClause = "WHERE " + strings.Join(conditions, " AND ")
+	}
+
+	query := fmt.Sprintf(
+		`SELECT COUNT(*) FROM todo %s`, whereClause)
+
 	var total int
-	err := db.DB.QueryRow(query, userID).Scan(&total)
+	err := db.DB.QueryRow(query, args...).Scan(&total)
 	if err != nil {
 		return 0, err
 	}

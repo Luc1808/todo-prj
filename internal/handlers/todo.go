@@ -12,6 +12,16 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
+type PaginatedTodosResponse struct {
+	Page       int           `json:"page"`
+	Limit      int           `json:"limit"`
+	TotalTodos int           `json:"total_todos"`
+	TotalPages int           `json:"total_pages"`
+	SortBy     string        `json:"sort_by"`
+	Order      string        `json:"order"`
+	Todos      []models.Todo `json:"todos"`
+}
+
 func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	// Get user ID for todo creation
 	authHeader := r.Header.Get("Authorization")
@@ -132,15 +142,17 @@ func GetAllTodosWithPagination(w http.ResponseWriter, r *http.Request) {
 	userID := uint(claims["user_id"].(float64))
 
 	// Pagination, sorting, filtering stuff
-	totalTodos, err := models.GetNumberOfTodos(userID)
-	if err != nil {
-		http.Error(w, "Failed to get the total number of to-dos", http.StatusUnauthorized)
-		return
-	}
 
 	page, limit, offset := parsePaginationParams(r)
 	sortBy, sortOrder := parseSortParams(r)
 	priority, category, complete := parseFilterParams(r)
+
+	// totalTodos, err := models.GetTodoCount(userID)
+	totalTodos, err := models.GetFilteredTodoCount(userID, priority, category, complete)
+	if err != nil {
+		http.Error(w, "Failed to get the total number of to-dos", http.StatusUnauthorized)
+		return
+	}
 
 	todos, err := models.GetTodosWithPagination(userID, limit, offset, sortBy, sortOrder, priority, category, complete)
 	if err != nil {
@@ -151,14 +163,24 @@ func GetAllTodosWithPagination(w http.ResponseWriter, r *http.Request) {
 	// Get total pages
 	totalPages := int(math.Ceil(float64(totalTodos) / float64(limit)))
 
-	response := map[string]any{
-		"page":        page,
-		"limit":       limit,
-		"total_todos": totalTodos,
-		"total_pages": totalPages,
-		"sort_by":     sortBy,
-		"order":       sortOrder,
-		"todos":       todos,
+	// response := map[string]any{
+	// 	"page":        page,
+	// 	"limit":       limit,
+	// 	"total_todos": totalTodos,
+	// 	"total_pages": totalPages,
+	// 	"sort_by":     sortBy,
+	// 	"order":       sortOrder,
+	// 	"todos":       todos,
+	// }
+
+	response := PaginatedTodosResponse{
+		Page:       page,
+		Limit:      limit,
+		TotalTodos: totalTodos,
+		TotalPages: totalPages,
+		SortBy:     sortBy,
+		Order:      sortOrder,
+		Todos:      todos,
 	}
 
 	w.Header().Set("Content-type", "application/json")
