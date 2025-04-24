@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -66,7 +67,46 @@ func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("Todo created successfully!")
 }
 
-func GetAllTodos(w http.ResponseWriter, r *http.Request) {
+// GetAllTodos is commented out because it is not used in the current implementation.
+
+// func GetAllTodos(w http.ResponseWriter, r *http.Request) {
+// 	authHeader := r.Header.Get("Authorization")
+
+// 	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+// 		http.Error(w, "Unauthorized - missing token", http.StatusUnauthorized)
+// 		return
+// 	}
+
+// 	token := strings.TrimPrefix(authHeader, "Bearer ")
+// 	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
+// 		return []byte(os.Getenv("JWT_REFRESH_TOKEN")), nil
+// 	})
+// 	if err != nil || !parsedToken.Valid {
+// 		http.Error(w, "Failed to parse token", http.StatusUnauthorized)
+// 		return
+// 	}
+
+// 	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+// 	if !ok {
+// 		http.Error(w, "Failed to parse token claims", http.StatusUnauthorized)
+// 		return
+// 	}
+
+// 	userID := uint(claims["user_id"].(float64))
+
+// 	var todo models.Todo
+// 	todo.UserID = userID
+// 	todos, err := todo.GetAllTodos()
+// 	if err != nil {
+// 		http.Error(w, "Error trying to get all todos", http.StatusBadRequest)
+// 		return
+// 	}
+
+// 	w.Header().Set("Content-type", "application/json")
+// 	json.NewEncoder(w).Encode(todos)
+// }
+
+func GetAllTodosWithPagination(w http.ResponseWriter, r *http.Request) {
 	authHeader := r.Header.Get("Authorization")
 
 	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
@@ -91,16 +131,36 @@ func GetAllTodos(w http.ResponseWriter, r *http.Request) {
 
 	userID := uint(claims["user_id"].(float64))
 
-	var todo models.Todo
-	todo.UserID = userID
-	todos, err := todo.GetAllTodos()
+	// Pagination stuff
+	page, limit, offset := parsePaginationParams(r)
+	totalTodos, err := models.GetNumberOfTodos(userID)
+	if err != nil {
+		http.Error(w, "Failed to get the total number of to-dos", http.StatusUnauthorized)
+		return
+	}
+
+	// var todo models.Todo
+	// todo.UserID = userID
+	// todos, err := todo.GetAllTodos()
+	todos, err := models.GetTodosWithPagination(userID, limit, offset)
 	if err != nil {
 		http.Error(w, "Error trying to get all todos", http.StatusBadRequest)
 		return
 	}
 
+	// Get total pages
+	totalPages := int(math.Ceil(float64(totalTodos) / float64(limit)))
+
+	response := map[string]any{
+		"page":        page,
+		"limit":       limit,
+		"total_todos": totalTodos,
+		"total_pages": totalPages,
+		"todos":       todos,
+	}
+
 	w.Header().Set("Content-type", "application/json")
-	json.NewEncoder(w).Encode(todos)
+	json.NewEncoder(w).Encode(response)
 }
 
 func GetTodoByID(w http.ResponseWriter, r *http.Request) {
@@ -371,4 +431,24 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]any{
 		"message": "Todo deleted successfully!",
 	})
+}
+
+func parsePaginationParams(r *http.Request) (page, limit, offset int) {
+	page = 1
+	limit = 10
+
+	if pStr := r.URL.Query().Get("page"); pStr != "" {
+		if p, err := strconv.Atoi(pStr); err == nil && p > 0 {
+			page = p
+		}
+	}
+
+	if lStr := r.URL.Query().Get("limit"); lStr != "" {
+		if l, err := strconv.Atoi(lStr); err == nil && l > 0 {
+			limit = l
+		}
+	}
+
+	offset = (page - 1) * limit
+	return
 }

@@ -60,9 +60,32 @@ func (t *Todo) Save() error {
 	return nil
 }
 
-func (t *Todo) GetAllTodos() ([]Todo, error) {
-	query := `SELECT id, title, description, complete, priority, category, createdat, duedate, userID FROM todo WHERE userid = $1`
-	rows, err := db.DB.Query(query, t.UserID)
+// func (t *Todo) GetAllTodos() ([]Todo, error) {
+// 	query := `SELECT id, title, description, complete, priority, category, createdat, duedate, userID FROM todo WHERE userid = $1`
+// 	rows, err := db.DB.Query(query, t.UserID)
+// 	if err != nil {
+// 		return nil, err
+// 	}
+// 	defer rows.Close()
+
+// 	var todos []Todo
+
+// 	for rows.Next() {
+// 		var todo Todo
+// 		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueAt, &todo.UserID)
+// 		if err != nil {
+// 			return nil, err
+// 		}
+
+// 		todos = append(todos, todo)
+// 	}
+
+// 	return todos, nil
+// }
+
+func GetTodosWithPagination(userID uint, limit int, offset int) ([]Todo, error) {
+	query := `SELECT id, title, description, complete, priority, category, createdat, duedate FROM todo WHERE userid = $1 LIMIT $2 OFFSET $3`
+	rows, err := db.DB.Query(query, userID, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -72,7 +95,7 @@ func (t *Todo) GetAllTodos() ([]Todo, error) {
 
 	for rows.Next() {
 		var todo Todo
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueAt, &todo.UserID)
+		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueAt)
 		if err != nil {
 			return nil, err
 		}
@@ -182,4 +205,15 @@ func (t *Todo) DeleteTodo(id uint, userID uint) error {
 	}
 
 	return nil
+}
+
+func GetNumberOfTodos(userID uint) (int, error) {
+	query := `SELECT COUNT(*) FROM todo WHERE userID = $1`
+	var total int
+	err := db.DB.QueryRow(query, userID).Scan(&total)
+	if err != nil {
+		return 0, err
+	}
+
+	return total, nil
 }
