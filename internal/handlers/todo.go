@@ -131,20 +131,19 @@ func GetAllTodosWithPagination(w http.ResponseWriter, r *http.Request) {
 
 	userID := uint(claims["user_id"].(float64))
 
-	// Pagination stuff
-	page, limit, offset := parsePaginationParams(r)
+	// Pagination, sorting stuff
 	totalTodos, err := models.GetNumberOfTodos(userID)
 	if err != nil {
 		http.Error(w, "Failed to get the total number of to-dos", http.StatusUnauthorized)
 		return
 	}
 
-	// var todo models.Todo
-	// todo.UserID = userID
-	// todos, err := todo.GetAllTodos()
-	todos, err := models.GetTodosWithPagination(userID, limit, offset)
+	page, limit, offset := parsePaginationParams(r)
+	sortBy, sortOrder := parseSortParams(r)
+
+	todos, err := models.GetTodosWithPagination(userID, limit, offset, sortBy, sortOrder)
 	if err != nil {
-		http.Error(w, "Error trying to get all todos", http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -156,6 +155,8 @@ func GetAllTodosWithPagination(w http.ResponseWriter, r *http.Request) {
 		"limit":       limit,
 		"total_todos": totalTodos,
 		"total_pages": totalPages,
+		"sort_by":     sortBy,
+		"order":       sortOrder,
 		"todos":       todos,
 	}
 
@@ -451,4 +452,32 @@ func parsePaginationParams(r *http.Request) (page, limit, offset int) {
 
 	offset = (page - 1) * limit
 	return
+}
+
+func parseSortParams(r *http.Request) (sortBy, sortOrder string) {
+	sortBy = r.URL.Query().Get("sort_by")
+	sortOrder = r.URL.Query().Get("order")
+
+	if sortBy == "" {
+		sortBy = "id"
+	}
+
+	if sortOrder == "" {
+		sortOrder = "asc"
+	}
+
+	validSorts := map[string]bool{
+		"id":        true,
+		"complete":  true,
+		"priority":  true,
+		"category":  true,
+		"createdat": true,
+		"duedate":   true,
+	}
+
+	if !validSorts[sortBy] {
+		sortBy = "id"
+	}
+
+	return sortBy, sortOrder
 }

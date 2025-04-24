@@ -1,6 +1,7 @@
 package models
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/Luc1808/todo-prj/internal/db"
@@ -30,7 +31,7 @@ type Todo struct {
 	Priority    Priorities `json:"priority"`
 	Category    Categories `json:"category"`
 	CreatedAt   time.Time  `json:"createdAt"`
-	DueAt       time.Time  `json:"dueAt"`
+	DueDate     time.Time  `json:"dueDate"`
 	UserID      uint       `json:"userID"`
 }
 
@@ -52,7 +53,7 @@ func (c Categories) IsValid() bool {
 
 func (t *Todo) Save() error {
 	query := `INSERT INTO todo (title, description, complete, priority, category, createdAt, dueDate, userID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
-	_, err := db.DB.Exec(query, t.Title, t.Description, t.Complete, t.Priority, t.Category, time.Now(), t.DueAt, t.UserID)
+	_, err := db.DB.Exec(query, t.Title, t.Description, t.Complete, t.Priority, t.Category, time.Now(), t.DueDate, t.UserID)
 	if err != nil {
 		return err
 	}
@@ -72,7 +73,7 @@ func (t *Todo) Save() error {
 
 // 	for rows.Next() {
 // 		var todo Todo
-// 		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueAt, &todo.UserID)
+// 		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueDate, &todo.UserID)
 // 		if err != nil {
 // 			return nil, err
 // 		}
@@ -83,8 +84,27 @@ func (t *Todo) Save() error {
 // 	return todos, nil
 // }
 
-func GetTodosWithPagination(userID uint, limit int, offset int) ([]Todo, error) {
-	query := `SELECT id, title, description, complete, priority, category, createdat, duedate FROM todo WHERE userid = $1 LIMIT $2 OFFSET $3`
+func GetTodosWithPagination(userID uint, limit int, offset int, sortBy string, sortOrder string) ([]Todo, error) {
+	var orderBy string
+	if sortBy == "priority" {
+		orderBy = fmt.Sprintf(
+			`CASE priority
+			WHEN '%s' THEN 1 
+			WHEN '%s' THEN 2 
+			WHEN '%s' THEN 3
+			ELSE 4
+			END %s`, High, Medium, Low, sortOrder)
+	} else {
+		orderBy = fmt.Sprintf("%s %s", sortBy, sortOrder)
+	}
+
+	query := fmt.Sprintf(
+		`SELECT id, title, description, complete, priority, category, createdat, duedate 
+		FROM todo 
+		WHERE userid = $1 
+		ORDER BY %s 
+		LIMIT $2 OFFSET $3
+		`, orderBy)
 	rows, err := db.DB.Query(query, userID, limit, offset)
 	if err != nil {
 		return nil, err
@@ -95,7 +115,7 @@ func GetTodosWithPagination(userID uint, limit int, offset int) ([]Todo, error) 
 
 	for rows.Next() {
 		var todo Todo
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueAt)
+		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueDate)
 		if err != nil {
 			return nil, err
 		}
@@ -118,7 +138,7 @@ func GetCompletedTodos(userID uint) ([]Todo, error) {
 
 	for rows.Next() {
 		var todo Todo
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueAt)
+		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueDate)
 		if err != nil {
 			return nil, err
 		}
@@ -133,7 +153,7 @@ func (t *Todo) GetTodoByID(id uint) error {
 	query := `SELECT title, description, complete, priority, category, createdat, duedate, userID FROM todo WHERE id = $1`
 	row := db.DB.QueryRow(query, id)
 
-	err := row.Scan(&t.Title, &t.Description, &t.Complete, &t.Priority, &t.Category, &t.CreatedAt, &t.DueAt, &t.UserID)
+	err := row.Scan(&t.Title, &t.Description, &t.Complete, &t.Priority, &t.Category, &t.CreatedAt, &t.DueDate, &t.UserID)
 	if err != nil {
 		return err
 	}
@@ -153,7 +173,7 @@ func GetTodosByPriority(userID uint, priority Priorities) ([]Todo, error) {
 
 	for rows.Next() {
 		var todo Todo
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueAt)
+		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueDate)
 		if err != nil {
 			return nil, err
 		}
@@ -176,7 +196,7 @@ func GetTodosByCategory(userID uint, category Categories) ([]Todo, error) {
 
 	for rows.Next() {
 		var todo Todo
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueAt)
+		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueDate)
 		if err != nil {
 			return nil, err
 		}
@@ -189,7 +209,7 @@ func GetTodosByCategory(userID uint, category Categories) ([]Todo, error) {
 
 func (t *Todo) UpdateTodo(id uint, userID uint) error {
 	query := `UPDATE todo SET title = $1, description = $2, complete = $3, priority = $4, category = $5, duedate = $6 WHERE id = $7 AND userID = $8`
-	_, err := db.DB.Exec(query, t.Title, t.Description, t.Complete, t.Priority, t.Category, t.DueAt, id, userID)
+	_, err := db.DB.Exec(query, t.Title, t.Description, t.Complete, t.Priority, t.Category, t.DueDate, id, userID)
 	if err != nil {
 		return err
 	}
