@@ -27,9 +27,6 @@ func main() {
 	mux.Handle("PUT /tasks/{id}", middlewares.Authentication(http.HandlerFunc(handlers.UpdateTodo)))
 	mux.Handle("DELETE /tasks/{id}", middlewares.Authentication(http.HandlerFunc(handlers.DeleteTodo)))
 	mux.Handle("GET /tasks", middlewares.Authentication(http.HandlerFunc(handlers.GetAllTodosWithPagination)))
-	mux.Handle("GET /tasks/completed", middlewares.Authentication(http.HandlerFunc(handlers.GetCompletedTodos)))
-	mux.Handle("GET /tasks/priority/{level}", middlewares.Authentication(http.HandlerFunc(handlers.GetTodosByPriority)))
-	mux.Handle("GET /tasks/category/{category}", middlewares.Authentication(http.HandlerFunc(handlers.GetTodosByCategory)))
 	mux.Handle("GET /protected", middlewares.Authentication(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		io.WriteString(w, "Welcome to the protected page!")
 	})))

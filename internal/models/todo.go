@@ -177,29 +177,6 @@ func GetTodosWithPagination(
 	return todos, nil
 }
 
-func GetCompletedTodos(userID uint) ([]Todo, error) {
-	query := `SELECT id, title, description, complete, priority, category, createdat, duedate FROM todo WHERE userid = $1 AND complete = true`
-	rows, err := db.DB.Query(query, userID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var todos []Todo
-
-	for rows.Next() {
-		var todo Todo
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueDate)
-		if err != nil {
-			return nil, err
-		}
-
-		todos = append(todos, todo)
-	}
-
-	return todos, nil
-}
-
 func (t *Todo) GetTodoByID(id uint) error {
 	query := `SELECT title, description, complete, priority, category, createdat, duedate, userID FROM todo WHERE id = $1`
 	row := db.DB.QueryRow(query, id)
@@ -210,52 +187,6 @@ func (t *Todo) GetTodoByID(id uint) error {
 	}
 
 	return nil
-}
-
-func GetTodosByPriority(userID uint, priority Priorities) ([]Todo, error) {
-	query := `SELECT id, title, description, complete, priority, category, createdat, duedate FROM todo WHERE userid = $1 AND priority = $2`
-	rows, err := db.DB.Query(query, userID, priority)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var todos []Todo
-
-	for rows.Next() {
-		var todo Todo
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueDate)
-		if err != nil {
-			return nil, err
-		}
-
-		todos = append(todos, todo)
-	}
-
-	return todos, nil
-}
-
-func GetTodosByCategory(userID uint, category Categories) ([]Todo, error) {
-	query := `SELECT id, title, description, complete, priority, category, createdat, duedate FROM todo WHERE userid = $1 AND category = $2`
-	rows, err := db.DB.Query(query, userID, category)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-
-	var todos []Todo
-
-	for rows.Next() {
-		var todo Todo
-		err := rows.Scan(&todo.ID, &todo.Title, &todo.Description, &todo.Complete, &todo.Priority, &todo.Category, &todo.CreatedAt, &todo.DueDate)
-		if err != nil {
-			return nil, err
-		}
-
-		todos = append(todos, todo)
-	}
-
-	return todos, nil
 }
 
 func (t *Todo) UpdateTodo(id uint, userID uint) error {
