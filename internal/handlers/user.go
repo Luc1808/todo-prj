@@ -11,11 +11,17 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-// @Summary Register a new user
-// @Description Register a new user with email and password
-// @Tags users
-// @Accept json
-// @Produce json
+// RegisterHandler godoc
+// @Summary      Register a new user
+// @Description  Register a new user with email and password
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        user  body      models.User  true  "User object"
+// @Success      201  {string}  string  "User successfully created"
+// @Failure      400  {string}  string  "Invalid JSON"
+// @Failure      500  {string}  string  "Problems registering user"
+// @Router       /register [post]
 func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
