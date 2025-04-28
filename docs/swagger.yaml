@@ -1,0 +1,13 @@
+basePath: /
+host: localhost:8080
+info:
+  contact:
+    email: support@example.com
+    name: API Support
+    url: http://www.example.com/support
+  description: A simple ToDo API built with Go and PostgreSQL.
+  termsOfService: http://example.com/terms/
+  title: ToDo API
+  version: "1.0"
+paths: {}
+swagger: "2.0"

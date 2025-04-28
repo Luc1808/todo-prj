@@ -1,3 +1,14 @@
+// @title           ToDo API
+// @version         1.0
+// @description     A simple ToDo API built with Go and PostgreSQL.
+// @termsOfService  http://example.com/terms/
+
+// @contact.name   API Support
+// @contact.url    http://www.example.com/support
+// @contact.email  support@example.com
+
+// @host      localhost:8080
+// @BasePath  /
 package main
 
 import (
@@ -5,15 +16,19 @@ import (
 	"log"
 	"net/http"
 
+	_ "github.com/Luc1808/todo-prj/docs"
 	"github.com/Luc1808/todo-prj/internal/db"
 	"github.com/Luc1808/todo-prj/internal/handlers"
 	"github.com/Luc1808/todo-prj/internal/middlewares"
+	httpSwagger "github.com/swaggo/http-swagger/v2"
 )
 
 func main() {
 	db.InitDB()
 
 	mux := http.NewServeMux()
+
+	mux.Handle("/swagger/", httpSwagger.WrapHandler)
 
 	// Public routes
 	mux.HandleFunc("POST /register", handlers.RegisterHandler)
