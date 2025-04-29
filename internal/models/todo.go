@@ -36,6 +36,15 @@ type Todo struct {
 	UserID      uint       `json:"userID"`
 }
 
+type TodoRequest struct {
+	Title       string     `json:"title"`
+	Description string     `json:"description"`
+	Complete    bool       `json:"complete"`
+	Priority    Priorities `json:"priority"`
+	Category    Categories `json:"category"`
+	DueDate     time.Time  `json:"dueDate"`
+}
+
 func (p Priorities) IsValid() bool {
 	switch p {
 	case High, Medium, Low:
@@ -54,6 +63,7 @@ func (c Categories) IsValid() bool {
 
 func (t *Todo) Save() error {
 	query := `INSERT INTO todo (title, description, complete, priority, category, createdAt, dueDate, userID) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
+	fmt.Println(t.UserID)
 	_, err := db.DB.Exec(query, t.Title, t.Description, t.Complete, t.Priority, t.Category, time.Now(), t.DueDate, t.UserID)
 	if err != nil {
 		return err

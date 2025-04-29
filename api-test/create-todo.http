@@ -1,11 +1,11 @@
 POST http://localhost:8080/tasks
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFsaWNlQGdtYWlsLmNvbSIsImV4cCI6MTc0NTUxMjIyNiwidXNlcl9pZCI6M30.hiNl5NAooss2xD5jqyvMmWzrqMGwUEtb7WgzQYLLYkI
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEiLCJleHAiOjE3NDU5Mzc2MTYsInVzZXJfaWQiOjF9.SuL6QBVBeaig_9DK92kgQxS4vfoMoCodFBo55Q_qTr4
 
 {
-    "title": "Task 1 Title",
-    "description": "This is test task 1",
-    "complete": false,
-    "priority": "low",
-    "dueAt": "2025-05-01T10:00:00Z",
-    "category": "social"
+   "title": "Task 1 Title",
+  "description": "This is test task 1",
+  "complete": false,
+   "priority": "low",
+  "dueAt": "2025-05-01T10:00:00Z",
+  "category": "social"
 }

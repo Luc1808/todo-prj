@@ -9,6 +9,11 @@
 
 // @host      localhost:8080
 // @BasePath  /
+
+// @securityDefinitions.apikey  BearerToken
+// @in                          header
+// @name                        Authorization
+
 package main
 
 import (
@@ -34,7 +39,7 @@ func main() {
 	mux.HandleFunc("POST /register", handlers.RegisterHandler)
 	mux.HandleFunc("POST /login", handlers.LoginHandler)
 	mux.HandleFunc("POST /refresh", handlers.RefreshHandler)
-	mux.HandleFunc("GET /users", handlers.GetUsers)
+	// mux.HandleFunc("GET /users", handlers.GetUsers)
 
 	// Protected routes
 	mux.Handle("POST /tasks", middlewares.Authentication(http.HandlerFunc(handlers.CreateTodoHandler)))

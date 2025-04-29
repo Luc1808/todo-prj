@@ -39,7 +39,7 @@ func InitDB() {
 func createTables() {
 	_, err := DB.Exec(`CREATE TABLE IF NOT EXISTS users (
 		id SERIAL PRIMARY KEY,
-		email VARCHAR(45),
+		email VARCHAR(45) UNIQUE NOT NULL,
 		password TEXT
 	);`)
 	if err != nil {

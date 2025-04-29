@@ -17,7 +17,8 @@ var secretAcessKey = os.Getenv("JWT_ACCESS_SECRET")
 var secretRefreshKey = os.Getenv("JWT_REFRESH_SECRET")
 
 const (
-	AccessTokenDuration  = time.Minute * 15
+	// GO BACK TO 15 MINUTES LATER
+	AccessTokenDuration  = time.Hour * 3
 	RefreshTokenDuration = time.Hour * 24 * 7
 )
 

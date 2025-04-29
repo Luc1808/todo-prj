@@ -13,6 +13,11 @@ type User struct {
 	Password string `json:"password"`
 }
 
+type UserRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 func (u *User) Save() error {
 	query := `INSERT INTO users (email, password) VALUES ($1, $2)`
 

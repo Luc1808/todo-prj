@@ -19,6 +19,10 @@ type RefreshToken struct {
 	ExpiresAt time.Time
 }
 
+type RefreshTokenRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
 func StoreRefreshToken(userID uint, token string, expiresAt time.Time) error {
 	query := `INSERT INTO token (token, userID, createdAt, expiresAt) VALUES ($1, $2, $3, $4)`
 

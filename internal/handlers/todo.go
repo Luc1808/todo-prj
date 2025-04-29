@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"encoding/json"
+	"fmt"
 	"math"
 	"net/http"
 	"os"
@@ -22,31 +23,26 @@ type PaginatedTodosResponse struct {
 	Todos      []models.Todo `json:"todos"`
 }
 
+// CreateTodoHandler godoc
+// @Summary      Create a new todo
+// @Description  Create a new todo task
+// @Tags         todos
+// @Accept       json
+// @Produce      json
+// @Param        todo  body     models.TodoRequest  true  "Todo object"
+// @Success      201  {string}  string  "Todo successfully created"
+// @Failure      400  {string}  string  "Invalid JSON"
+// @Failure      401  {string}  string  "Unauthorized - missing token"
+// @Failure      500  {string}  string  "Error trying to saving new To-do task"
+// @Security BearerToken
+// @Router       /tasks [post]
 func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 	// Get user ID for todo creation
-	authHeader := r.Header.Get("Authorization")
-
-	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+	userID, err := getUserIdFromToken(r)
+	if err != nil {
 		http.Error(w, "Unauthorized - missing token", http.StatusUnauthorized)
 		return
 	}
-
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
-		return []byte(os.Getenv("JWT_ACCESS_TOKEN")), nil
-	})
-	if err != nil || !parsedToken.Valid {
-		http.Error(w, "Failed to parse token", http.StatusUnauthorized)
-		return
-	}
-
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	if !ok {
-		http.Error(w, "Failed to parse token claims", http.StatusUnauthorized)
-		return
-	}
-
-	userID := uint(claims["user_id"].(float64))
 
 	// Get request body
 	var todo models.Todo
@@ -64,6 +60,7 @@ func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid category value", http.StatusBadRequest)
 		return
 	}
+	fmt.Println(userID)
 	todo.UserID = userID
 
 	err = todo.Save()
@@ -116,30 +113,32 @@ func CreateTodoHandler(w http.ResponseWriter, r *http.Request) {
 // 	json.NewEncoder(w).Encode(todos)
 // }
 
+// GetAllTodosWithPagination godoc
+// @Summary      Get all todos with pagination
+// @Description  Get all todos with pagination, sorting, and filtering
+// @Tags         todos
+// @Accept       json
+// @Produce      json
+// @Param        page  query     int  false  "Page number"
+// @Param        limit  query     int  false  "Number of items per page"
+// @Param        sort_by  query     string  false  "Sort by field (priority, category, createdat, duedate)"
+// @Param        order  query     string  false  "Sort order (asc/desc)"
+// @Param        priority  query     string  false  "Filter by priority (high, medium, low)"
+// @Param        category  query     string  false  "Filter by category (social, self development, finance, health)"
+// @Param        complete  query     bool  false  "Filter by completion status"
+// @Param        search  query     string  false  "Search term"
+// @Success      200  {object}  PaginatedTodosResponse
+// @Failure      400  {string}  string  "Invalid parameters"
+// @Failure      401  {string}  string  "Unauthorized - missing token"
+// @Failure      500  {string}  string  "Failed to get the total number of to-dos"
+// @Security BearerToken
+// @Router       /tasks [get]
 func GetAllTodosWithPagination(w http.ResponseWriter, r *http.Request) {
-	authHeader := r.Header.Get("Authorization")
-
-	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+	userID, err := getUserIdFromToken(r)
+	if err != nil {
 		http.Error(w, "Unauthorized - missing token", http.StatusUnauthorized)
 		return
 	}
-
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
-		return []byte(os.Getenv("JWT_REFRESH_TOKEN")), nil
-	})
-	if err != nil || !parsedToken.Valid {
-		http.Error(w, "Failed to parse token", http.StatusUnauthorized)
-		return
-	}
-
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	if !ok {
-		http.Error(w, "Failed to parse token claims", http.StatusUnauthorized)
-		return
-	}
-
-	userID := uint(claims["user_id"].(float64))
 
 	// Pagination, sorting, filtering stuff
 
@@ -159,6 +158,10 @@ func GetAllTodosWithPagination(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
+	}
+
+	for i := range todos {
+		todos[i].UserID = userID
 	}
 
 	// Get total pages
@@ -188,30 +191,25 @@ func GetAllTodosWithPagination(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(response)
 }
 
+// GetTodoByID godoc
+// @Summary      Get a todo by ID
+// @Description  Get a todo task by its ID
+// @Tags         todos
+// @Accept       json
+// @Produce      json
+// @Param        id  path     int  true  "Todo ID"
+// @Success      200  {object}  models.Todo
+// @Failure      400  {string}  string  "Invalid ID"
+// @Failure      401  {string}  string  "Unauthorized - missing token"
+// @Failure      500  {string}  string  "Error trying to get todo by ID"
+// @Security BearerToken
+// @Router       /tasks/{id} [get]
 func GetTodoByID(w http.ResponseWriter, r *http.Request) {
-	authHeader := r.Header.Get("Authorization")
-
-	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+	userID, err := getUserIdFromToken(r)
+	if err != nil {
 		http.Error(w, "Unauthorized - missing token", http.StatusUnauthorized)
 		return
 	}
-
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
-		return []byte(os.Getenv("JWT_REFRESH_TOKEN")), nil
-	})
-	if err != nil || !parsedToken.Valid {
-		http.Error(w, "Failed to parse token", http.StatusUnauthorized)
-		return
-	}
-
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	if !ok {
-		http.Error(w, "Failed to parse token claims", http.StatusUnauthorized)
-		return
-	}
-
-	userID := uint(claims["user_id"].(float64))
 
 	var todo models.Todo
 	todo.UserID = userID
@@ -236,29 +234,11 @@ func GetTodoByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func UpdateTodo(w http.ResponseWriter, r *http.Request) {
-	authHeader := r.Header.Get("Authorization")
-
-	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+	userID, err := getUserIdFromToken(r)
+	if err != nil {
 		http.Error(w, "Unauthorized - missing token", http.StatusUnauthorized)
 		return
 	}
-
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
-		return []byte(os.Getenv("JWT_REFRESH_TOKEN")), nil
-	})
-	if err != nil || !parsedToken.Valid {
-		http.Error(w, "Failed to parse token", http.StatusUnauthorized)
-		return
-	}
-
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	if !ok {
-		http.Error(w, "Failed to parse token claims", http.StatusUnauthorized)
-		return
-	}
-
-	userID := uint(claims["user_id"].(float64))
 
 	var todo models.Todo
 	todo.UserID = userID
@@ -300,30 +280,25 @@ func UpdateTodo(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// DeleteTodo godoc
+// @Summary      Delete a todo by ID
+// @Description  Delete a todo task by its ID
+// @Tags         todos
+// @Accept       json
+// @Produce      json
+// @Param        id  path     int  true  "Todo ID"
+// @Success      200  {string}  string  "Todo successfully deleted"
+// @Failure      400  {string}  string  "Invalid ID"
+// @Failure      401  {string}  string  "Unauthorized - missing token"
+// @Failure      500  {string}  string  "Error trying to delete todo"
+// @Security BearerToken
+// @Router       /tasks/{id} [delete]
 func DeleteTodo(w http.ResponseWriter, r *http.Request) {
-	authHeader := r.Header.Get("Authorization")
-
-	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+	userID, err := getUserIdFromToken(r)
+	if err != nil {
 		http.Error(w, "Unauthorized - missing token", http.StatusUnauthorized)
 		return
 	}
-
-	token := strings.TrimPrefix(authHeader, "Bearer ")
-	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
-		return []byte(os.Getenv("JWT_REFRESH_TOKEN")), nil
-	})
-	if err != nil || !parsedToken.Valid {
-		http.Error(w, "Failed to parse token", http.StatusUnauthorized)
-		return
-	}
-
-	claims, ok := parsedToken.Claims.(jwt.MapClaims)
-	if !ok {
-		http.Error(w, "Failed to parse token claims", http.StatusUnauthorized)
-		return
-	}
-
-	userID := uint(claims["user_id"].(float64))
 
 	var todo models.Todo
 	todo.UserID = userID
@@ -347,6 +322,30 @@ func DeleteTodo(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(map[string]any{
 		"message": "Todo deleted successfully!",
 	})
+}
+
+func getUserIdFromToken(r *http.Request) (uint, error) {
+	authHeader := r.Header.Get("Authorization")
+
+	if authHeader == "" || !strings.HasPrefix(authHeader, "Bearer ") {
+		return 0, http.ErrNoCookie
+	}
+
+	token := strings.TrimPrefix(authHeader, "Bearer ")
+	parsedToken, err := jwt.Parse(token, func(token *jwt.Token) (any, error) {
+		return []byte(os.Getenv("JWT_REFRESH_TOKEN")), nil
+	})
+	if err != nil || !parsedToken.Valid {
+		return 0, http.ErrNoCookie
+	}
+
+	claims, ok := parsedToken.Claims.(jwt.MapClaims)
+	if !ok {
+		return 0, http.ErrNoCookie
+	}
+
+	userID := uint(claims["user_id"].(float64))
+	return userID, nil
 }
 
 func parsePaginationParams(r *http.Request) (page, limit, offset int) {

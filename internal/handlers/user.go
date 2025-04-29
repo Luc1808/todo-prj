@@ -17,7 +17,7 @@ import (
 // @Tags         users
 // @Accept       json
 // @Produce      json
-// @Param        user  body      models.User  true  "User object"
+// @Param        user  body     models.UserRequest  true  "User object"
 // @Success      201  {string}  string  "User successfully created"
 // @Failure      400  {string}  string  "Invalid JSON"
 // @Failure      500  {string}  string  "Problems registering user"
@@ -32,7 +32,7 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = user.Save()
 	if err != nil {
-		http.Error(w, "Problems registering user", http.StatusBadRequest)
+		http.Error(w, "Problems registering user", http.StatusInternalServerError)
 		return
 	}
 
@@ -41,6 +41,18 @@ func RegisterHandler(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode("User succesfully created!")
 }
 
+// LoginHandler godoc
+// @Summary      Login user
+// @Description  Login user with email and password
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        user  body     models.UserRequest  true  "User object"
+// @Success      200  {string}  string  "Login successful"
+// @Failure      400  {string}  string  "Invalid JSON"
+// @Failure      401  {string}  string  "Invalid credentials"
+// @Failure      500  {string}  string  "Unable to create authentication token"
+// @Router       /login [post]
 func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	var user models.User
 	err := json.NewDecoder(r.Body).Decode(&user)
@@ -76,6 +88,18 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
+// RefreshHandler godoc
+// @Summary      Refresh access token
+// @Description  Refresh access token using refresh token
+// @Tags         users
+// @Accept       json
+// @Produce      json
+// @Param        refresh_token  body     models.RefreshTokenRequest true  "Refresh token"
+// @Success      200  {string}  string  "New access token"
+// @Failure      400  {string}  string  "Invalid JSON"
+// @Failure      401  {string}  string  "Unauthorized"
+// @Failure      500  {string}  string  "Failed to generate new token pair"
+// @Router       /refresh [post]
 func RefreshHandler(w http.ResponseWriter, r *http.Request) {
 	var tokenRequest struct {
 		RefreshToken string `json:"refresh_token"`
@@ -136,14 +160,14 @@ func RefreshHandler(w http.ResponseWriter, r *http.Request) {
 	})
 }
 
-func GetUsers(w http.ResponseWriter, r *http.Request) {
-	users, err := models.GetAllUsers()
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
+// func GetUsers(w http.ResponseWriter, r *http.Request) {
+// 	users, err := models.GetAllUsers()
+// 	if err != nil {
+// 		http.Error(w, err.Error(), http.StatusInternalServerError)
+// 		return
+// 	}
 
-	w.Header().Set("Content-type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(users)
-}
+// 	w.Header().Set("Content-type", "application/json")
+// 	w.WriteHeader(http.StatusOK)
+// 	json.NewEncoder(w).Encode(users)
+// }

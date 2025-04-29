@@ -1,96 +1,51 @@
-#!/usr/bin/env bash
+#!/bin/bash
+API_URL="http://localhost:8080/tasks"
+AUTH_TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImEiLCJleHAiOjE3NDU5MzcyNjcsInVzZXJfaWQiOjF9.7h-ADbDAnSpSxdxFfWD_UBCulRPHNNYWVIyP6fQAUuI"
 
-TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6Imx1Y2FzQGdtYWlsLmNvbSIsImV4cCI6MTc0NTQwMzg5MSwidXNlcl9pZCI6MX0.I6wmW4SmQ_LA9GksBjMcd8jSf2-5qVe2Tjvv9RQROA0"
+# Health tasks
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Morning yoga session","description":"Attend a 30-minute yoga session","category":"health","priority":"medium","dueDate":"2025-05-06T07:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Schedule annual physical","description":"Book and attend annual check-up with GP","category":"health","priority":"high","dueDate":"2025-05-10T10:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Grocery run for healthy meals","description":"Buy ingredients for healthy lunches","category":"health","priority":"low","dueDate":"2025-05-15T12:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Hydration reminder","description":"Drink at least 8 glasses of water","category":"health","priority":"medium","dueDate":"2025-05-20T09:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Evening walk","description":"Go for a 30-minute walk after dinner","category":"health","priority":"low","dueDate":"2025-05-25T18:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Meditation practice","description":"Complete a guided meditation session","category":"health","priority":"medium","dueDate":"2025-06-01T07:30:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Cycling workout","description":"30-minute cycling for cardio","category":"health","priority":"high","dueDate":"2025-06-05T08:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Meal prep","description":"Prepare meals for the week","category":"health","priority":"medium","dueDate":"2025-06-10T14:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Sleep early","description":"Aim for 8 hours of sleep","category":"health","priority":"low","dueDate":"2025-06-15T21:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Gym strength training","description":"Complete strength training at gym","category":"health","priority":"high","dueDate":"2025-06-20T17:00:00Z","complete":true}'
 
-# 1
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Buy groceries","description":"Buy milk, bread, and eggs","complete":false,"priority":"medium","duedate":"2025-05-01T10:00:00Z","category":"health"}'
+# Social tasks
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Call parents","description":"Catch up with mom and dad","category":"social","priority":"high","dueDate":"2025-06-05T19:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Plan dinner with friends","description":"Organize a group dinner this weekend","category":"social","priority":"medium","dueDate":"2025-06-12T12:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Send birthday card","description":"Mail birthday card to Alex","category":"social","priority":"medium","dueDate":"2025-06-18T09:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Attend networking event","description":"Join the tech meetup downtown","category":"social","priority":"high","dueDate":"2025-06-25T18:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Coffee chat with colleague","description":"Discuss project over coffee","category":"social","priority":"medium","dueDate":"2025-07-02T10:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Family game night","description":"Host board games at home","category":"social","priority":"low","dueDate":"2025-07-08T20:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Volunteer at local shelter","description":"Help out at the animal shelter","category":"social","priority":"medium","dueDate":"2025-07-15T09:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Join book club meeting","description":"Discuss this month’s read","category":"social","priority":"low","dueDate":"2025-07-20T17:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Organize photo album","description":"Sort and caption recent photos","category":"social","priority":"low","dueDate":"2025-07-25T15:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Movie night","description":"Watch new release with friends","category":"social","priority":"high","dueDate":"2025-07-30T20:00:00Z","complete":true}'
 
-# 2
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Submit project report","description":"Finalize and submit the project report to manager","complete":false,"priority":"high","duedate":"2025-04-25T17:00:00Z","category":"finance"}'
+# Finance tasks
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Review monthly budget","description":"Go over last month’s expenses","category":"finance","priority":"medium","dueDate":"2025-08-01T10:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Pay electricity bill","description":"Submit payment online","category":"finance","priority":"high","dueDate":"2025-08-05T12:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"File tax documents","description":"Prepare and file tax return","category":"finance","priority":"high","dueDate":"2025-08-10T09:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Invest in index fund","description":"Allocate new monthly contribution","category":"finance","priority":"medium","dueDate":"2025-08-15T14:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Set up emergency fund","description":"Open high-yield savings account","category":"finance","priority":"high","dueDate":"2025-08-20T16:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Review credit report","description":"Check for errors and fraud","category":"finance","priority":"medium","dueDate":"2025-09-01T10:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Cancel unused subscriptions","description":"Review and cancel unwanted services","category":"finance","priority":"low","dueDate":"2025-09-05T11:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Update retirement plan","description":"Adjust asset allocation","category":"finance","priority":"medium","dueDate":"2025-09-10T13:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Analyze spending habits","description":"Identify areas to cut costs","category":"finance","priority":"low","dueDate":"2025-09-15T15:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Schedule meeting with financial advisor","description":"Discuss long-term goals","category":"finance","priority":"low","dueDate":"2025-09-20T09:00:00Z","complete":true}'
 
-# 3
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Workout session","description":"Attend gym for strength training","complete":false,"priority":"low","duedate":"2025-04-24T07:30:00Z","category":"self development"}'
-
-# 4
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Call mom","description":"Check in with mom to see how she’s doing","complete":false,"priority":"low","duedate":"2025-04-24T20:00:00Z","category":"social"}'
-
-# 5
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Read book","description":"Read at least 50 pages of current book","complete":false,"priority":"low","duedate":"2025-04-26T21:00:00Z","category":"self development"}'
-
-# 6
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Pay bills","description":"Pay electricity and internet bills","complete":false,"priority":"high","duedate":"2025-04-24T12:00:00Z","category":"finance"}'
-
-# 7
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Plan team meeting","description":"Organize agenda for next team sync","complete":false,"priority":"medium","duedate":"2025-04-27T09:00:00Z","category":"social"}'
-
-# 8
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Dentist appointment","description":"Routine dental check-up","complete":false,"priority":"medium","duedate":"2025-05-02T11:00:00Z","category":"health"}'
-
-# 9
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Meditation","description":"Meditate for 15 minutes","complete":false,"priority":"low","duedate":"2025-04-24T06:30:00Z","category":"self development"}'
-
-# 10
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Invest research","description":"Research potential stocks for investment","complete":false,"priority":"medium","duedate":"2025-04-28T14:00:00Z","category":"finance"}'
-
-# 11
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Friend’s birthday gift","description":"Buy a gift for Alex’s birthday","complete":false,"priority":"low","duedate":"2025-04-30T18:00:00Z","category":"social"}'
-
-# 12
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Yoga class","description":"Attend virtual yoga session","complete":false,"priority":"low","duedate":"2025-04-25T19:00:00Z","category":"health"}'
-
-# 13
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Update resume","description":"Add recent projects to resume","complete":false,"priority":"medium","duedate":"2025-04-29T16:00:00Z","category":"self development"}'
-
-# 14
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Review budget","description":"Analyze monthly expenses and adjust budget","complete":false,"priority":"medium","duedate":"2025-04-30T12:00:00Z","category":"finance"}'
-
-# 15
-curl -s -X POST http://localhost:8080/tasks \
-  -H "Authorization: Bearer $TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"title":"Coffee with Sarah","description":"Catch up over coffee","complete":false,"priority":"low","duedate":"2025-04-26T10:30:00Z","category":"social"}'
-
-echo "Done sending 15 dummy tasks."
-
+# Self development tasks
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Read Deep Work","description":"Read Deep Work by Cal Newport","category":"self development","priority":"medium","dueDate":"2025-10-05T18:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Complete online course","description":"Finish current module on Coursera","category":"self development","priority":"high","dueDate":"2025-10-10T08:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Practice coding challenges","description":"Solve 3 problems on LeetCode","category":"self development","priority":"medium","dueDate":"2025-10-15T17:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Learn a new language","description":"Complete Duolingo Spanish streak","category":"self development","priority":"high","dueDate":"2025-10-20T09:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Write in journal","description":"Reflect on today’s achievements","category":"self development","priority":"low","dueDate":"2025-11-01T20:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Listen to productivity podcast","description":"Tune into latest episode of The Tim Ferriss Show","category":"self development","priority":"medium","dueDate":"2025-11-05T07:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Attend workshop","description":"Participate in time-management workshop","category":"self development","priority":"high","dueDate":"2025-11-10T12:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Set personal goals","description":"Define objectives for next quarter","category":"self development","priority":"low","dueDate":"2025-11-15T09:00:00Z","complete":true}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Read a research paper","description":"Study recent AI ethics publication","category":"self development","priority":"medium","dueDate":"2025-11-20T16:00:00Z","complete":false}'
+curl -X POST "$API_URL" -H "accept: application/json" -H "Authorization: Bearer $AUTH_TOKEN" -H "Content-Type: application/json" -d '{"title":"Practice public speaking","description":"Rehearse TED talk style presentation","category":"self development","priority":"low","dueDate":"2025-11-25T17:00:00Z","complete":true}'
